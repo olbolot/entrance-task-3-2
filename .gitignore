@@ -1,2 +1,5 @@
 inputData.js
 .idea/
+/node_modules/
+.vscode/
+.DS_Store
