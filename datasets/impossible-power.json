@@ -1,0 +1,18 @@
+{
+  "devices": [
+      {
+          "id": "D3ADB33F000000000000D3ADB33F0000",
+          "name": "HiPower Device",
+          "power": 4,
+          "duration": 2
+      }
+  ],
+  "rates": [
+      {
+          "from": 0,
+          "to": 23,
+          "value": 10
+      }
+  ],
+  "maxPower": 2
+}

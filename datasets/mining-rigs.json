@@ -1,0 +1,56 @@
+{
+  "devices": [
+      {
+          "id": "MINING-RIG-1",
+          "name": "Криптоферма №1",
+          "power": 800,
+          "duration": 22
+      },
+      {
+          "id": "MINING-RIG-2",
+          "name": "Криптоферма №2",
+          "power": 850,
+          "duration": 22
+      },
+      {
+          "id": "MINING-RIG-3",
+          "name": "Криптоферма №3",
+          "power": 810,
+          "duration": 22
+      },
+      {
+          "id": "MINING-RIG-4",
+          "name": "Криптоферма №4",
+          "power": 920,
+          "duration": 24
+      }
+  ],
+  "rates": [
+      {
+          "from": 7,
+          "to": 10,
+          "value": 6.46
+      },
+      {
+          "from": 10,
+          "to": 17,
+          "value": 5.38
+      },
+      {
+          "from": 17,
+          "to": 21,
+          "value": 6.46
+      },
+      {
+          "from": 21,
+          "to": 23,
+          "value": 5.38
+      },
+      {
+          "from": 23,
+          "to": 7,
+          "value": 1.79
+      }
+  ],
+  "maxPower": 2100
+}

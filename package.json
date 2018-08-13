@@ -1,0 +1,18 @@
+{
+  "name": "task3",
+  "version": "1.0.0",
+  "description": "test task for Yandex Interfece Development School",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js ./datasets/yandex-input-data.json",
+    "test": "jest"
+  },
+  "author": "Bolotova Olga",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^23.4.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

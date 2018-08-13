@@ -1,0 +1,21 @@
+{
+  "devices": [],
+  "rates": [{
+  	"from": 2,
+  	"to": 6,
+  	"value": 3
+  }, {
+  	"from": 15,
+  	"to": 23,
+  	"value": 4
+  }, {
+  	"from": 0,
+  	"to": 1,
+  	"value": 5
+  }, {
+    "from": 7,
+    "to": 14,
+    "value": 6
+  }],
+  "maxPower": 100
+}

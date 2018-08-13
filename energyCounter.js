@@ -1,21 +1,33 @@
-
+const ERRORS = require('./errorTypes');
 module.exports = function (inputData) {
-
     let ratesPerHour = [];
 
     inputData.rates.forEach(function (el) {
-        if (el.from > 24 || el.to > 24) {
-            throw new Error("В сутках не может быть больше 24 часов");
+		if (typeof(el.value) === "undefined" ||
+			typeof(el.from) === "undefined" || 
+			typeof(el.to) === "undefined") {
+            throw new Error(ERRORS.MissingSomeRateProperties);
+        }
+
+        if (isNaN(parseInt(el.from)) || isNaN(parseInt(el.to))) {
+            throw new Error(ERRORS.RateFromToIsNaN);
         }
 
         if (isNaN(parseFloat(el.value))) {
-            throw new Error('что-то не number')
+            throw new Error(ERRORS.RateValueIsNaN);
         } else {
             el.value = parseFloat(el.value);
         }
+		
+        if (el.from > 24 || el.to > 24) {
+            throw new Error(ERRORS.MoreThen24HoursInDay);
+        }
 
-        if (!el.value || !el.from || !el.to) {
-            throw new Error("отсутствуют обязательные параметры у rates");
+
+        if (isNaN(parseFloat(el.value))) {
+            throw new Error(ERRORS.RateValueIsNaN);
+        } else {
+            el.value = parseFloat(el.value);
         }
 
         for (let i = el.from; i !== el.to; i++) {
@@ -23,15 +35,18 @@ module.exports = function (inputData) {
                 i = 0;
             }
             if (typeof (ratesPerHour[i]) !== "undefined") {
-                console.log("Тарифы накладываются друг на друга")
+                throw new Error(ERRORS.RatesIntersects);
             }
             ratesPerHour[i] = el.value;
         }
     });
 
+	if (ratesPerHour.length === 0) {
+		throw new Error(ERRORS.RatesNotDefined);
+	}
     for (let i = 0; i < ratesPerHour.length; i++) {
         if (!ratesPerHour[i]) {
-            throw new Error('Отсутствую тарифы для некоторых часов')
+            throw new Error(ERRORS.UnspecifiedHourRate);
         }
     }
 
@@ -57,11 +72,12 @@ module.exports = function (inputData) {
             }
             let remaining = duration;
             let price = 0;
+            let validSeries = true;
             for (let j = i; remaining !== 0; j++) {
                 if (j === 24) {
                     j = 0;
                 }
-                if (powerUsagePerHour[i] - power < 0) {
+                if (powerUsagePerHour[j] - power < 0) {
                     continue collectSeries;
                 }
                 price += ratesPerHour[j];
@@ -83,35 +99,43 @@ module.exports = function (inputData) {
         let startScheduleIndex = -1;
 
         if (device.power > inputData.maxPower) {
-            throw new Error(`Максимальная можность девайса ${device.name} превышает максимально дпустимую`);
+            throw new Error(ERRORS.MaxPowerExceededForDevice(device));
+        }
+        if (device.duration > 24) {
+            throw new Error(ERRORS.DeviceCannotRunMoreThen24Hours)
         }
 
         let startSearchIndex;
         let finishSearchIndex;
+        let modeAvaliableHours = 0;
 
-        switch (device.mode) {
-            case "night":
-                startSearchIndex = 21;
-                finishSearchIndex = 7;
-                break;
-            case "day":
-                startSearchIndex = 7;
-                finishSearchIndex = 21;
-                break;
-            default:
-                startSearchIndex = 0;
-                finishSearchIndex = 23;
+        if (typeof(device.mode) === "undefined") {
+            startSearchIndex = 0;
+            finishSearchIndex = 23;
+            modeAvaliableHours = 24;
+        } else if (device.mode === "day") {
+            startSearchIndex = 7;
+            finishSearchIndex = 21;
+            modeAvaliableHours = 14;
+        } else if (device.mode === "night") {
+            startSearchIndex = 21;
+            finishSearchIndex = 7;
+            modeAvaliableHours = 10;
+        } else {
+            throw new Error(ERRORS.UnexpectedModeSpecifiedForDevice(device));
         }
-
+        if (device.duration > modeAvaliableHours) {
+            throw new Error(ERRORS.RequestedTooMuchWorkingHoursForDevice(device, modeAvaliableHours));
+        }
         let series = findMinSeries(startSearchIndex, finishSearchIndex, device.duration, device.power);
         if (!series) {
-            throw new Error(`Проблема с расчётом в какие часы запускать девайс ${device.name} ${device.id}`);
+            throw new Error(ERRORS.CannotFindHoursForRunningDevice(device));
         }
         startScheduleIndex = series.index;
         consumed.devices[device.id] = parseFloat((series.price / 1000 * device.power).toFixed(4));
 
         if (startScheduleIndex === -1) {
-            throw new Error(`Проблема с расчётом в какие часы запускать девайс ${device.name} ${device.id}`);
+            throw new Error(ERRORS.CannotFindHoursForRunningDevice(device));
         }
         let hoursRemaining = device.duration;
         for (let i = startScheduleIndex; hoursRemaining !== 0; i++) {
@@ -120,6 +144,9 @@ module.exports = function (inputData) {
             }
             schedule[i].push(device.id);
             powerUsagePerHour[i] -= device.power;
+            if (powerUsagePerHour[i] < 0) {
+                throw new Error(ERRORS.CannotFindHoursForRunningDevice(device));
+            }
             hoursRemaining -= 1;
         }
         consumed.value += parseFloat(consumed.devices[device.id]);

@@ -1,0 +1,18 @@
+{
+  "devices": [
+      {
+          "id": "C01DB0",
+          "name": "Mining farm",
+          "power": 950,
+          "duration": 26
+      }
+  ],
+  "rates": [
+      {
+          "from": 0,
+          "to": 23,
+          "value": 10
+      }
+  ],
+  "maxPower": 1000
+}

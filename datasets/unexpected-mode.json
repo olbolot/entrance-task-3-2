@@ -1,0 +1,19 @@
+{
+  "devices": [
+      {
+          "id": "12738192758175983271938274923730",
+          "name": "Generic Device",
+          "power": 4,
+          "duration": 5,
+          "mode": "midnight"
+      }
+  ],
+  "rates": [
+      {
+          "from": 0,
+          "to": 23,
+          "value": 10
+      }
+  ],
+  "maxPower": 10
+}

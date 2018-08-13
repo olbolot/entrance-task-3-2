@@ -1,0 +1,8 @@
+{
+  "devices": [],
+  "rates": [{
+  	"from": 0,
+  	"to": 1
+  }],
+  "maxPower": 100
+}
